@@ -120,4 +120,12 @@ class TransactionService extends BaseService
 
         return (float) ($row->total ?? 0);
     }
+
+    public function recent(int $limit = 5): array
+    {
+        return $this->transactionModel
+            ->where('user_id', $this->userId())
+            ->orderBy('transaction_date', 'DESC')
+            ->findAll($limit);
+    }
 }

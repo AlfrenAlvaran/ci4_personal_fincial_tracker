@@ -2,6 +2,18 @@
 
 <?= $this->section('content') ?>
 
+<?php
+
+$labels = [];
+$balances = [];
+
+foreach ($forecast as $item) {
+    $labels[] = $item['month'];
+    $balances[] = $item['balance'];
+}
+
+?>
+
 <div class="mb-4">
 
     <h2 class="fw-bold mb-1">
@@ -14,7 +26,6 @@
 
 </div>
 
-<!-- SUMMARY -->
 <div class="row g-4">
 
     <div class="col-md-6 col-xl-3">
@@ -28,7 +39,7 @@
                 </small>
 
                 <h2 class="fw-bold text-success mt-3">
-                    ₱31,500
+                    ₱<?= number_format($currentBalance, 2) ?>
                 </h2>
 
             </div>
@@ -48,7 +59,7 @@
                 </small>
 
                 <h2 class="fw-bold mt-3">
-                    ₱40,000
+                    ₱<?= number_format($expectedIncome, 2) ?>
                 </h2>
 
             </div>
@@ -68,7 +79,7 @@
                 </small>
 
                 <h2 class="fw-bold text-danger mt-3">
-                    ₱14,550
+                    ₱<?= number_format($expectedExpenses, 2) ?>
                 </h2>
 
             </div>
@@ -88,7 +99,7 @@
                 </small>
 
                 <h2 class="fw-bold text-primary mt-3">
-                    ₱16,950
+                    ₱<?= number_format($expectedSavings, 2) ?>
                 </h2>
 
             </div>
@@ -99,7 +110,6 @@
 
 </div>
 
-<!-- CHART -->
 <div class="card border mt-4">
 
     <div class="card-body">
@@ -132,7 +142,6 @@
 
 </div>
 
-<!-- INSIGHTS -->
 <div class="card border mt-4">
 
     <div class="card-body">
@@ -141,23 +150,18 @@
             Forecast Insights
         </h5>
 
-        <div class="alert alert-success mb-3">
-            Your balance is projected to increase by 23% next month.
-        </div>
+        <?php foreach ($insights as $insight): ?>
 
-        <div class="alert alert-warning mb-3">
-            Food spending may exceed your budget within 2 weeks.
-        </div>
+            <div class="alert alert-<?= esc($insight['type']) ?> mb-3">
+                <?= esc($insight['message']) ?>
+            </div>
 
-        <div class="alert alert-info mb-0">
-            Your savings goal can be achieved in approximately 3 months.
-        </div>
+        <?php endforeach; ?>
 
     </div>
 
 </div>
 
-<!-- FORECAST TABLE -->
 <div class="card border mt-4">
 
     <div class="card-body">
@@ -183,32 +187,29 @@
 
                 <tbody>
 
-                    <tr>
-                        <td>Jun</td>
-                        <td>₱40,000</td>
-                        <td>₱14,550</td>
-                        <td class="fw-semibold text-success">
-                            ₱31,500
-                        </td>
-                    </tr>
+                    <?php foreach ($forecast as $row): ?>
 
-                    <tr>
-                        <td>Jul</td>
-                        <td>₱40,000</td>
-                        <td>₱15,100</td>
-                        <td class="fw-semibold text-success">
-                            ₱56,400
-                        </td>
-                    </tr>
+                        <tr>
 
-                    <tr>
-                        <td>Aug</td>
-                        <td>₱40,000</td>
-                        <td>₱15,800</td>
-                        <td class="fw-semibold text-success">
-                            ₱80,600
-                        </td>
-                    </tr>
+                            <td>
+                                <?= esc($row['month']) ?>
+                            </td>
+
+                            <td>
+                                ₱<?= number_format($row['income'], 2) ?>
+                            </td>
+
+                            <td>
+                                ₱<?= number_format($row['expenses'], 2) ?>
+                            </td>
+
+                            <td class="fw-semibold text-success">
+                                ₱<?= number_format($row['balance'], 2) ?>
+                            </td>
+
+                        </tr>
+
+                    <?php endforeach; ?>
 
                 </tbody>
 
@@ -229,35 +230,34 @@ new Chart(
     {
         type: 'line',
         data: {
-            labels: [
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug'
-            ],
+            labels: <?= json_encode(
+                $labels,
+                JSON_HEX_TAG |
+                JSON_HEX_APOS |
+                JSON_HEX_QUOT |
+                JSON_HEX_AMP
+            ) ?>,
             datasets: [{
                 label: 'Projected Balance',
-                data: [
-                    15000,
-                    18000,
-                    21000,
-                    23500,
-                    25450,
-                    31500,
-                    56400,
-                    80600
-                ],
+                data: <?= json_encode(
+                    $balances,
+                    JSON_HEX_TAG |
+                    JSON_HEX_APOS |
+                    JSON_HEX_QUOT |
+                    JSON_HEX_AMP
+                ) ?>,
                 tension: 0.4,
                 fill: true
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
         }
     }
 );

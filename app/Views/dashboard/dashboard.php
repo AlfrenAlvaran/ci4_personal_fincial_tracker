@@ -2,7 +2,18 @@
 
 <?= $this->section('content') ?>
 
-<!-- HEADER -->
+<?php
+
+$labels = [];
+$balances = [];
+
+foreach (($forecast ?? []) as $item) {
+    $labels[] = $item['month'] ?? '';
+    $balances[] = $item['balance'] ?? 0;
+}
+
+?>
+
 <div class="mb-5">
 
     <h2 class="fw-bold mb-1">
@@ -15,7 +26,6 @@
 
 </div>
 
-<!-- SUMMARY CARDS -->
 <div class="row g-4">
 
     <div class="col-md-6 col-xl-3">
@@ -24,16 +34,14 @@
 
             <div class="card-body">
 
-                <small class="text-muted">
-                    Total Balance
-                </small>
+                <small class="text-muted">Total Balance</small>
 
                 <h2 class="fw-bold mt-3 mb-1">
-                    ₱25,450
+                    ₱<?= number_format($totalBalance ?? 0, 2) ?>
                 </h2>
 
                 <small class="text-success">
-                    ↑ 12% from last month
+                    Financial overview
                 </small>
 
             </div>
@@ -48,17 +56,13 @@
 
             <div class="card-body">
 
-                <small class="text-muted">
-                    Monthly Income
-                </small>
+                <small class="text-muted">Monthly Income</small>
 
                 <h2 class="fw-bold text-success mt-3 mb-1">
-                    ₱<?= number_format($totalIncome ?? 0 , 2) ?>
+                    ₱<?= number_format($totalIncome ?? 0, 2) ?>
                 </h2>
 
-                <small class="text-muted">
-                    Current month
-                </small>
+                <small class="text-muted">Current month</small>
 
             </div>
 
@@ -72,17 +76,13 @@
 
             <div class="card-body">
 
-                <small class="text-muted">
-                    Monthly Expenses
-                </small>
+                <small class="text-muted">Monthly Expenses</small>
 
                 <h2 class="fw-bold text-danger mt-3 mb-1">
-                    ₱ <?= number_format($monthlyExpenses ?? 0, 2) ?>
+                    ₱<?= number_format($monthlyExpenses ?? 0, 2) ?>
                 </h2>
 
-                <small class="text-muted">
-                    Current month
-                </small>
+                <small class="text-muted">Current month</small>
 
             </div>
 
@@ -96,17 +96,13 @@
 
             <div class="card-body">
 
-                <small class="text-muted">
-                    Net Savings
-                </small>
+                <small class="text-muted">Net Savings</small>
 
                 <h2 class="fw-bold text-primary mt-3 mb-1">
-                    ₱10,900
+                    ₱<?= number_format($netSavings ?? 0, 2) ?>
                 </h2>
 
-                <small class="text-muted">
-                    Available savings
-                </small>
+                <small class="text-muted">Available savings</small>
 
             </div>
 
@@ -116,7 +112,6 @@
 
 </div>
 
-<!-- FORECAST SECTION -->
 <div class="card border mt-4">
 
     <div class="card-body">
@@ -125,9 +120,7 @@
 
             <div>
 
-                <h5 class="fw-semibold mb-1">
-                    Financial Forecast
-                </h5>
+                <h5 class="fw-semibold mb-1">Financial Forecast</h5>
 
                 <small class="text-muted">
                     Projected balance over the next 6 months
@@ -135,9 +128,7 @@
 
             </div>
 
-            <span class="badge text-bg-success">
-                Forecast Active
-            </span>
+            <span class="badge text-bg-success">Forecast Active</span>
 
         </div>
 
@@ -147,12 +138,10 @@
 
                 <div class="border rounded p-3">
 
-                    <small class="text-muted">
-                        Forecasted Balance
-                    </small>
+                    <small class="text-muted">Forecasted Balance</small>
 
                     <h3 class="fw-bold text-success mt-2 mb-0">
-                        ₱31,500
+                        ₱<?= number_format($currentBalance ?? 0, 2) ?>
                     </h3>
 
                 </div>
@@ -163,12 +152,10 @@
 
                 <div class="border rounded p-3">
 
-                    <small class="text-muted">
-                        Expected Income
-                    </small>
+                    <small class="text-muted">Expected Income</small>
 
                     <h3 class="fw-bold mt-2 mb-0">
-                        ₱40,000
+                        ₱<?= number_format($expectedIncome ?? 0, 2) ?>
                     </h3>
 
                 </div>
@@ -179,12 +166,10 @@
 
                 <div class="border rounded p-3">
 
-                    <small class="text-muted">
-                        Expected Expenses
-                    </small>
+                    <small class="text-muted">Expected Expenses</small>
 
                     <h3 class="fw-bold mt-2 mb-0">
-                        ₱14,550
+                        ₱<?= number_format($expectedExpenses ?? 0, 2) ?>
                     </h3>
 
                 </div>
@@ -194,113 +179,55 @@
         </div>
 
         <div style="height:400px;">
-
             <canvas id="forecastChart"></canvas>
-
         </div>
 
     </div>
 
 </div>
 
-<!-- RECENT ACTIVITY -->
 <div class="card border mt-4">
 
     <div class="card-body">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-semibold mb-4">Recent Activity</h5>
 
-            <h5 class="fw-semibold mb-0">
-                Recent Activity
-            </h5>
+        <?php if (!empty($recentTransactions)): ?>
 
-            <a href="<?= site_url('transactions') ?>" class="text-decoration-none">
+            <?php foreach ($recentTransactions as $t): ?>
 
-                View All
+                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
 
-            </a>
+                    <div>
 
-        </div>
+                        <div class="fw-medium">
+                            <?= esc($t['notes'] ?? 'Transaction') ?>
+                        </div>
 
-        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                        <small class="text-muted">
+                            <?= date('M d, Y', strtotime($t['transaction_date'])) ?>
+                        </small>
 
-            <div>
+                    </div>
 
-                <div class="fw-medium">
-                    Monthly Salary
+                    <div class="fw-semibold <?= $t['transaction_type'] === 'income' ? 'text-success' : 'text-danger' ?>">
+
+                        <?= $t['transaction_type'] === 'income' ? '+' : '-' ?>
+                        ₱<?= number_format($t['amount'], 2) ?>
+
+                    </div>
+
                 </div>
 
-                <small class="text-muted">
-                    May 29, 2026
-                </small>
+            <?php endforeach; ?>
 
+        <?php else: ?>
+
+            <div class="text-muted text-center py-4">
+                No recent transactions found.
             </div>
 
-            <div class="fw-semibold text-success">
-                + ₱20,000
-            </div>
-
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-
-            <div>
-
-                <div class="fw-medium">
-                    Lunch
-                </div>
-
-                <small class="text-muted">
-                    May 30, 2026
-                </small>
-
-            </div>
-
-            <div class="fw-semibold text-danger">
-                - ₱250
-            </div>
-
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-
-            <div>
-
-                <div class="fw-medium">
-                    Transportation
-                </div>
-
-                <small class="text-muted">
-                    May 30, 2026
-                </small>
-
-            </div>
-
-            <div class="fw-semibold text-danger">
-                - ₱180
-            </div>
-
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center py-3">
-
-            <div>
-
-                <div class="fw-medium">
-                    Savings Deposit
-                </div>
-
-                <small class="text-muted">
-                    May 27, 2026
-                </small>
-
-            </div>
-
-            <div class="fw-semibold text-primary">
-                + ₱5,000
-            </div>
-
-        </div>
+        <?php endif; ?>
 
     </div>
 
@@ -310,49 +237,31 @@
 
 <script>
 
-    new Chart(
-        document.getElementById('forecastChart'),
-        {
-            type: 'line',
-            data: {
-                labels: [
-                    'Jan',
-                    'Feb',
-                    'Mar',
-                    'Apr',
-                    'May',
-                    'Jun Forecast'
-                ],
-                datasets: [{
-                    label: 'Projected Balance',
-                    data: [
-                        15000,
-                        18000,
-                        21000,
-                        23500,
-                        25450,
-                        31500
-                    ],
-                    tension: 0.4,
-                    fill: true
-                }]
+new Chart(
+    document.getElementById('forecastChart'),
+    {
+        type: 'line',
+        data: {
+            labels: <?= json_encode($labels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
+            datasets: [{
+                label: 'Projected Balance',
+                data: <?= json_encode($balances, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+            scales: {
+                y: { beginAtZero: true }
             }
         }
-    );
+    }
+);
 
 </script>
 
