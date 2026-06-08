@@ -18,29 +18,34 @@ class DashboardController extends BaseController
     {
         $forecastData = $this->forecastingService->generate();
 
-        $totalIncome = $this->transactionService->totalIncome();
-        $totalExpenses = $this->transactionService->totalExpenses();
+        $totalIncome     = $this->transactionService->totalIncome();
+        $totalExpenses   = $this->transactionService->totalExpenses();
         $monthlyExpenses = $this->transactionService->monthlyExpenses();
 
         $totalBalance = $totalIncome - $totalExpenses;
-        $netSavings = $totalIncome - $totalExpenses;
+        $netSavings   = $totalIncome - $totalExpenses;
 
         $recentTransactions = $this->transactionService->recent(5);
 
+        // Pull expected income/expenses from first forecast month ensemble
+        $firstMonth       = $forecastData['forecast'][0] ?? null;
+        $expectedIncome   = $firstMonth['ensemble']['income']   ?? 0;
+        $expectedExpenses = $firstMonth['ensemble']['expenses'] ?? 0;
+
         return view('dashboard/dashboard', [
-            'title' => 'Dashboard',
+            'title'     => 'Dashboard',
             'pageTitle' => 'Financial Dashboard',
 
-            'totalIncome' => $totalIncome,
-            'totalExpenses' => $totalExpenses,
+            'totalIncome'     => $totalIncome,
+            'totalExpenses'   => $totalExpenses,
             'monthlyExpenses' => $monthlyExpenses,
 
             'totalBalance' => $totalBalance,
-            'netSavings' => $netSavings,
+            'netSavings'   => $netSavings,
 
-            'currentBalance' => $forecastData['currentBalance'],
-            'expectedIncome' => $forecastData['expectedIncome'],
-            'expectedExpenses' => $forecastData['expectedExpenses'],
+            'currentBalance'   => $forecastData['currentBalance'],
+            'expectedIncome'   => $expectedIncome,
+            'expectedExpenses' => $expectedExpenses,
 
             'forecast' => $forecastData['forecast'],
             'insights' => $forecastData['insights'],
