@@ -17,7 +17,6 @@ class ForecastingService extends BaseService
         protected BudgetModel $budgetModel = new BudgetModel()
     ) {
     }
-
     public function generate(int $forecastMonths = 6): array
     {
         $userId = $this->userId();
