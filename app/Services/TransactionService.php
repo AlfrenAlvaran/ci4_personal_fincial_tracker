@@ -157,7 +157,7 @@ class TransactionService extends BaseService
             ->table('transactions')
             ->select('COALESCE(SUM(amount),0) as total')
             ->where('user_id', $this->userId())
-            ->where('transaction_type', 'expense')
+            ->where('transaction_type', 'expenses')
             ->get()
             ->getRowArray();
 
@@ -170,7 +170,7 @@ class TransactionService extends BaseService
             ->table('transactions')
             ->select('COALESCE(SUM(amount), 0) as total')
             ->where('user_id', $this->userId())
-            ->where('transaction_type', 'expense')
+            ->where('transaction_type', 'expenses')
             ->where('transaction_date >=', date('Y-m-01'))
             ->where('transaction_date <=', date('Y-m-t'))
             ->get()

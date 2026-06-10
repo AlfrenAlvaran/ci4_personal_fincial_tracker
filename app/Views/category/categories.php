@@ -15,6 +15,20 @@
             Organize and monitor your financial categories
         </p>
 
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="alert alert-success alert-dismissible fade show">
+                <?= session()->getFlashdata('success') ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <?= session()->getFlashdata('error') ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
     </div>
 
     <a href="<?= site_url('categories/create') ?>" class="btn btn-dark">
@@ -80,7 +94,11 @@
                         <small class="text-muted d-block mb-2">
                             <?= esc($category['category_type']) ?>
                         </small>
-
+                        <?php if ((int)$category['usage_count'] > 0): ?>
+                            <span class="dropdown-item text-muted">
+                                Cannot delete (<?= $category['usage_count'] ?> uses)
+                            </span>
+                        <?php endif; ?>
                         <?php if (!empty($category['note'])): ?>
                             <p class="text-muted small mb-0">
                                 <?= esc($category['note']) ?>

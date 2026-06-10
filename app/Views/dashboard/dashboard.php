@@ -193,17 +193,19 @@ foreach (($forecast ?? []) as $item) {
         <h5 class="fw-semibold mb-4">Recent Activity</h5>
 
         <?php if (!empty($recentTransactions)): ?>
+           
 
             <?php foreach ($recentTransactions as $t): ?>
 
                 <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
 
                     <div>
-
                         <div class="fw-medium">
                             <?= esc($t['notes'] ?? 'Transaction') ?>
                         </div>
-
+                        <small class="text-muted d-block">
+                            Ref #: <?= esc($t['reference_number'] ?? 'N/A') ?>
+                        </small>
                         <small class="text-muted">
                             <?= date('M d, Y', strtotime($t['transaction_date'])) ?>
                         </small>
@@ -236,33 +238,34 @@ foreach (($forecast ?? []) as $item) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-
-new Chart(
-    document.getElementById('forecastChart'),
-    {
-        type: 'line',
-        data: {
-            labels: <?= json_encode($labels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
-            datasets: [{
-                label: 'Projected Balance',
-                data: <?= json_encode($balances, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+    new Chart(
+        document.getElementById('forecastChart'), {
+            type: 'line',
+            data: {
+                labels: <?= json_encode($labels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
+                datasets: [{
+                    label: 'Projected Balance',
+                    data: <?= json_encode($balances, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
+                    tension: 0.4,
+                    fill: true
+                }]
             },
-            scales: {
-                y: { beginAtZero: true }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
         }
-    }
-);
-
+    );
 </script>
 
 <?= $this->endSection() ?>

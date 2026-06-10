@@ -21,7 +21,7 @@ class CategoryController extends BaseController
         return view('category/categories', [
             'title' => 'Category',
             'pageTitle' => 'Category Management',
-            'categories' => $this->categoryService->findAll()
+            'categories' => $this->categoryService->getCategoriesWithUsageCount()
         ]);
     }
 
@@ -90,5 +90,19 @@ class CategoryController extends BaseController
         return redirect()
             ->to('/categories')
             ->with('success', $response['message']);
+    }
+
+
+    public function delete($id)
+    {
+        $result = $this->categoryService->delete((int) $id);
+
+        if (!$result['success']) {
+            return redirect()->back()
+                ->with('error', $result['message']);
+        }
+
+        return redirect()->to('/categories')
+            ->with('success', $result['message']);
     }
 }

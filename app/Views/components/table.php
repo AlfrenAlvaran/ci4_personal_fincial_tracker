@@ -12,30 +12,21 @@ $options = array_merge([
 
 <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
 
-    <!-- ================= SEARCH ================= -->
     <?php if ($options['search']): ?>
         <div class="card-body border-bottom bg-white">
-
             <div class="col-md-4 position-relative">
-
                 <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-
                 <input
                     type="text"
                     id="<?= esc($tableId) ?>Search"
                     class="form-control ps-5 rounded-3 bg-light border-0"
                     placeholder="Search...">
-
             </div>
-
         </div>
     <?php endif; ?>
 
-
-    <!-- ================= TABLE ================= -->
     <div class="table-responsive">
         <table class="table modern-table align-middle mb-0">
-
             <thead>
                 <tr>
                     <?php foreach ($columns as $column): ?>
@@ -43,92 +34,60 @@ $options = array_merge([
                     <?php endforeach; ?>
                 </tr>
             </thead>
-
             <tbody id="<?= esc($tableId) ?>Body">
-
                 <?php foreach ($rows as $row): ?>
                     <tr>
-
                         <?php foreach ($columns as $column): ?>
-
                             <?php
                             $field = $column['field'] ?? '';
                             $type  = $column['type'] ?? 'text';
                             ?>
-
                             <td data-field="<?= esc($field) ?>"
                                 class="<?= $type === 'actions' ? 'text-end position-relative' : '' ?>">
 
-                                <!-- ================= ACTIONS (ABSOLUTE MENU) ================= -->
                                 <?php if ($type === 'actions'): ?>
-
-                                    <!-- BUTTON -->
                                     <button
                                         class="btn btn-sm btn-light border-0 rounded-circle action-toggle"
                                         style="width:34px;height:34px"
                                         type="button"
                                         data-id="<?= esc($row['id']) ?>"
                                         data-actions='<?= json_encode($column["actions"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
-
                                         <i class="bi bi-three-dots"></i>
-
                                     </button>
 
-                                    <!-- MENU -->
-
-                                    <!-- ================= CALLBACK ================= -->
                                 <?php elseif (!empty($column['callback'])): ?>
-
                                     <?php
                                     $method = $column['callback'];
-
                                     if (is_string($method) && strpos($method, '::') !== false) {
-
                                         [$class, $func] = explode('::', $method);
-
                                         echo TableFormatter::$func($row);
                                     } else {
-
                                         echo esc($row[$field] ?? '');
                                     }
                                     ?>
 
-                                    <!-- ================= DEFAULT ================= -->
                                 <?php else: ?>
-
                                     <?= esc($row[$field] ?? '') ?>
-
                                 <?php endif; ?>
 
                             </td>
-
                         <?php endforeach; ?>
-
                     </tr>
                 <?php endforeach; ?>
-
             </tbody>
-
         </table>
     </div>
 
-
-    <!-- ================= FOOTER ================= -->
     <div class="card-body bg-white border-top d-flex justify-content-between align-items-center">
-
         <small class="text-muted" id="<?= esc($tableId) ?>Info">
             Showing 0 - 0
         </small>
-
         <ul class="pagination mb-0" id="<?= esc($tableId) ?>Pagination"></ul>
-
     </div>
 
 </div>
-<!-- GLOBAL DROPDOWN OVERLAY -->
+
 <div id="globalActionMenu" class="global-action-menu shadow border bg-white rounded-3"></div>
-
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -143,7 +102,6 @@ $options = array_merge([
 
                 e.stopPropagation();
 
-                // 🔥 ALWAYS RESET FIRST (VERY IMPORTANT)
                 menu.classList.remove("show");
                 menu.innerHTML = "";
 
@@ -160,7 +118,6 @@ $options = array_merge([
 
                 const id = btn.dataset.id;
 
-                // build menu
                 menu.innerHTML = actions.map(action => {
 
                     let url = action.url
@@ -168,32 +125,28 @@ $options = array_merge([
                         .replace('%7Bid%7D', id);
 
                     return `
-                    <a href="${url}"
-                       class="${action.class ?? ''}"
-                       ${action.confirm ? `onclick="return confirm('${action.confirm}')"` : ''}>
-
-                        <i class="bi ${action.icon} me-2"></i>
-                        ${action.label}
-                    </a>
-                `;
+                        <a href="${url}"
+                           class="${action.class ?? ''}"
+                           ${action.confirm ? `onclick="return confirm('${action.confirm}')"` : ''}>
+                            <i class="bi ${action.icon} me-2"></i>
+                            ${action.label}
+                        </a>
+                    `;
                 }).join('');
 
-                // show FIRST
                 menu.classList.add("show");
 
-                // position safely
-                let top = rect.bottom + window.scrollY;
+                let top  = rect.bottom + window.scrollY;
                 let left = rect.right - 180 + window.scrollX;
 
                 if (left < 10) left = 10;
 
-                menu.style.top = top + "px";
+                menu.style.top  = top + "px";
                 menu.style.left = left + "px";
             });
 
         });
 
-        // close menu
         document.addEventListener("click", function() {
             menu.classList.remove("show");
             menu.innerHTML = "";
@@ -210,15 +163,15 @@ $options = array_merge([
 
         const tableId = "<?= esc($tableId) ?>";
 
-        const searchInput = document.getElementById(tableId + "Search");
-        const filterInput = document.getElementById(tableId + "Filter");
+        const searchInput  = document.getElementById(tableId + "Search");
+        const filterInput  = document.getElementById(tableId + "Filter");
         const perPageInput = document.getElementById(tableId + "PerPage");
 
         const tableBody = document.getElementById(tableId + "Body");
-        const rows = Array.from(tableBody.querySelectorAll("tr"));
+        const rows      = Array.from(tableBody.querySelectorAll("tr"));
 
         const pagination = document.getElementById(tableId + "Pagination");
-        const info = document.getElementById(tableId + "Info");
+        const info       = document.getElementById(tableId + "Info");
 
         let currentPage = 1;
 
@@ -235,14 +188,12 @@ $options = array_merge([
                 let filterMatch = true;
 
                 if (filterField) {
-                    const cell = row.querySelector(`td[data-field="${filterField}"]`);
+                    const cell  = row.querySelector(`td[data-field="${filterField}"]`);
                     const value = cell ? cell.innerText.toLowerCase() : "";
                     filterMatch = !filterValue || value === filterValue;
                 }
 
-                const searchMatch = rowText.includes(searchValue);
-
-                return searchMatch && filterMatch;
+                return rowText.includes(searchValue) && filterMatch;
             });
         }
 
@@ -250,9 +201,7 @@ $options = array_merge([
 
             const filteredRows = getFilteredRows();
 
-            const perPage = perPageInput ?
-                parseInt(perPageInput.value) :
-                filteredRows.length;
+            const perPage = perPageInput ? parseInt(perPageInput.value) : 10;
 
             const totalPages = Math.ceil(filteredRows.length / perPage) || 1;
 
@@ -261,15 +210,15 @@ $options = array_merge([
             rows.forEach(row => row.style.display = "none");
 
             const start = (currentPage - 1) * perPage;
-            const end = start + perPage;
+            const end   = start + perPage;
 
             filteredRows.slice(start, end).forEach(row => {
                 row.style.display = "";
             });
 
-            info.textContent = filteredRows.length ?
-                `Showing ${start + 1} - ${Math.min(end, filteredRows.length)} of ${filteredRows.length}` :
-                "No results found";
+            info.textContent = filteredRows.length
+                ? `Showing ${start + 1} - ${Math.min(end, filteredRows.length)} of ${filteredRows.length}`
+                : "No results found";
 
             renderPagination(totalPages);
         }
@@ -282,7 +231,6 @@ $options = array_merge([
 
                 const li = document.createElement("li");
                 li.className = "page-item " + (i === currentPage ? "active" : "");
-
                 li.innerHTML = `<button class="page-link">${i}</button>`;
 
                 li.onclick = () => {
@@ -294,7 +242,6 @@ $options = array_merge([
             }
         }
 
-        // SAFE EVENT BINDING
         searchInput?.addEventListener("input", () => {
             currentPage = 1;
             renderTable();
