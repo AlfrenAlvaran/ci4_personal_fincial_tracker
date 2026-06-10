@@ -48,6 +48,12 @@ class TransactionMigration extends Migration
                 'type' => 'DATE',
             ],
 
+            'reference_number' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 20,
+                'null'       => false,
+            ],
+
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

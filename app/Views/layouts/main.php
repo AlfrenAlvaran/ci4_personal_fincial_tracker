@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="<?= base_url('bootstrap/css/bootstrap.min.css') ?>">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Design Table -->
+     <link rel="stylesheet" href="<?= base_url('/assets/table.css') ?>">
+    <!-- Custom Design Table -->
 </head>
 
 <body class="bg-light">
@@ -38,55 +42,52 @@
 
                     <li class="nav-item">
                         <a href="<?= site_url('/') ?>"
-                            class="nav-link bg-success-subtle text-success fw-semibold rounded-3">
+                            class="nav-link <?= empty(service('uri')->getSegment(1)) ? 'bg-success-subtle text-success fw-semibold' : 'text-dark' ?> rounded-3">
                             <i class="bi bi-grid me-2"></i>
                             Dashboard
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="<?= site_url('transactions') ?>" class="nav-link text-dark rounded-3">
+                        <a href="<?= site_url('transactions') ?>"
+                            class="nav-link <?= navActive('transactions') ?> rounded-3">
                             <i class="bi bi-receipt me-2"></i>
                             Transactions
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="<?= site_url('categories') ?>" class="nav-link text-dark rounded-3">
+                        <a href="<?= site_url('categories') ?>"
+                            class="nav-link <?= navActive('categories') ?> rounded-3">
                             <i class="bi bi-tags me-2"></i>
                             Categories
                         </a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a href="<?= site_url('income-sources') ?>" class="nav-link text-dark rounded-3">
-                            <i class="bi bi-cash-stack me-2"></i>
-                            Income Sources
-                        </a>
-                    </li> -->
 
                     <li class="nav-item">
-                        <a href="<?= site_url('budgets') ?>" class="nav-link text-dark rounded-3">
+                        <a href="<?= site_url('budgets') ?>" class="nav-link <?= navActive('budgets') ?> rounded-3">
                             <i class="bi bi-wallet2 me-2"></i>
                             Budgets
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="<?= site_url('forecasting') ?>" class="nav-link text-dark rounded-3">
+                        <a href="<?= site_url('forecasting') ?>"
+                            class="nav-link <?= navActive('forecasting') ?> rounded-3">
                             <i class="bi bi-graph-up-arrow me-2"></i>
                             Forecasting
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="<?= site_url('reports') ?>" class="nav-link text-dark rounded-3">
+                        <a href="<?= site_url('reports') ?>" class="nav-link <?= navActive('reports') ?> rounded-3">
                             <i class="bi bi-bar-chart me-2"></i>
                             Reports
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="<?= site_url('settings') ?>" class="nav-link text-dark rounded-3">
+                        <a href="<?= site_url('settings') ?>" class="nav-link <?= navActive('settings') ?> rounded-3">
                             <i class="bi bi-gear me-2"></i>
                             Settings
                         </a>

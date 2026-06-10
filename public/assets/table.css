@@ -1,0 +1,33 @@
+.global-action-menu {
+    position: absolute;
+    min-width: 180px;
+    display: none !important;
+    flex-direction: column;
+    z-index: 99999;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.global-action-menu.show {
+    display: flex !important;
+}
+
+.global-action-menu a {
+    padding: 0.6rem 0.8rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.global-action-menu a:hover {
+    background: #f8fafc;
+}
+
+.global-action-menu a.text-danger:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}

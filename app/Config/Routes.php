@@ -32,24 +32,34 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', [CategoryController::class, 'category']);
         $routes->get('create', [CategoryController::class, 'create']);
         $routes->post('store', [CategoryController::class, 'store']);
+        $routes->get('edit/(:num)', [CategoryController::class, 'edit/$1']);
+        $routes->post('update/(:num)', [CategoryController::class, 'update/$1']);
     });
     #CATEGORY MANAGEMENT
 
     #TRANSACTION MANAGEMENT
     $routes->group('transactions', function ($routes) {
+
         $routes->get('/', [TransactionController::class, 'transaction']);
         $routes->get('create', [TransactionController::class, 'create']);
         $routes->post('store', [TransactionController::class, 'store']);
 
+        $routes->get('detail/(:num)', [TransactionController::class, 'details/$1']);
+
+        $routes->get('edit/(:num)', [TransactionController::class, 'edit']);
+        $routes->post('update/(:num)', [TransactionController::class, 'update']);
+
+        $routes->get('delete/(:num)', [TransactionController::class, 'delete']);
     });
 
+    
     #Budget Management
     $routes->group('budgets', function ($routes) {
         $routes->get('', [BudgetController::class, 'budget']);
-        $routes->post('create', [BudgetController::class,'store']);
+        $routes->post('create', [BudgetController::class, 'store']);
     });
     #Budget Management
-    
+
 
     // FORECASTING MANAGEMENT
     $routes->group('forecasting', function ($routes) {

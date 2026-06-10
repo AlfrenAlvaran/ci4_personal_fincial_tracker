@@ -14,7 +14,8 @@ class Table
             'rows' => $rows,
             'options' => array_merge([
                 'search' => true,
-                'tableId' => 'dynamicTable'
+                'tableId' => 'dynamicTable',
+                'filterField' => null
             ], $options)
         ]);
     }

@@ -44,7 +44,7 @@ $errors = session('errors') ?? [];
 
         <div class="card-body p-4">
 
-            
+
             <div class="card bg-light border-0 mb-4">
 
                 <div class="card-body">
@@ -280,13 +280,19 @@ $errors = session('errors') ?? [];
         "mdi:book",
         "mdi:tag",
         "mdi:account",
-        "mdi:wallet-outline",
-        "mdi:cash-multiple",
-        "mdi:bank-transfer",
-        "mdi:currency-usd",
-        "mdi:finance"
+        "mdi:airplane",
+        "mdi:hospital",
+        "mdi:school",
+        "mdi:wifi",
+        "mdi:lightning-bolt",
+        "mdi:gamepad",
+        "mdi:movie",
+        "mdi:coffee",
+        "mdi:basketball",
+        "mdi:train",
+        "mdi:bike",
+        "mdi:gas-station"
     ];
-
     const iconList = document.getElementById('iconList');
     const iconSearch = document.getElementById('iconSearch');
 

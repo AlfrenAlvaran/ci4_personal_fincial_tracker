@@ -13,6 +13,7 @@ class TransactionModel extends Model
     protected $useSoftDeletes = false;
     protected $protectFields = true;
     protected $allowedFields = [
+        'reference_number',
         'user_id',
         'transaction_type',
         'category_id',

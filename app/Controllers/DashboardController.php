@@ -27,7 +27,7 @@ class DashboardController extends BaseController
 
         $recentTransactions = $this->transactionService->recent(5);
 
-        // Pull expected income/expenses from first forecast month ensemble
+       
         $firstMonth = $forecastData['forecast'][0] ?? null;
         $expectedIncome = $firstMonth['ensemble']['income'] ?? 0;
         

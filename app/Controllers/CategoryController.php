@@ -25,6 +25,45 @@ class CategoryController extends BaseController
         ]);
     }
 
+    public function edit($id)
+    {
+        $category = $this->categoryService->findById($id);
+
+        if (!$category) {
+            return redirect()
+                ->to('/categories')
+                ->with('error', 'Category not found.');
+        }
+
+        return view('category/edit', [
+            'title' => 'Edit Category',
+            'pageTitle' => 'Edit Category',
+            'category' => $category
+        ]);
+    }
+
+    public function update($id)
+    {
+        $response = $this->categoryService->update(
+            (int) $id,
+            $this->request->getPost()
+        );
+
+        if (!$response['success']) {
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('errors', $response['errors'] ?? [
+                    'general' => $response['message']
+                ]);
+        }
+
+        return redirect()
+            ->to('/categories')
+            ->with('success', $response['message']);
+    }
+
     public function create()
     {
         return view('category/create', [

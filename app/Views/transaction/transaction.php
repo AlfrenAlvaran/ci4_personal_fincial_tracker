@@ -26,12 +26,11 @@
 </div>
 
 
-
 <?= view_cell('Table::render', [
     'columns' => [
         [
-            'field' => 'id',
-            'label' => '#'
+            'field' => 'reference_number',
+            'label' => 'REF NO'
         ],
         [
             'field' => 'category_name',
@@ -39,22 +38,45 @@
         ],
         [
             'field' => 'transaction_type',
-            'label' => 'TYPE'
+            'label' => 'TYPE',
+            'callback' => 'TableFormatter::type'
         ],
         [
             'field' => 'amount',
-            'label' => 'AMOUNT'
+            'label' => 'AMOUNT',
+            'callback' => 'TableFormatter::amount'
         ],
         [
             'field' => 'transaction_date',
-            'label' => 'DATE'
+            'label' => 'DATE',
+            'callback' => 'TableFormatter::date'
         ],
-
-        
+        [
+            'field' => 'actions',
+            'label' => '',
+            'type' => 'actions',
+            'actions' => [
+                [
+                    'label' => 'View',
+                    'icon'  => 'bi-eye',
+                    'url'   => site_url('transactions/detail/{id}')
+                ],
+                [
+                    'label' => 'Edit',
+                    'icon'  => 'bi-pencil',
+                    'url'   => site_url('transactions/edit/{id}')
+                ],
+                [
+                    'label'   => 'Delete',
+                    'icon'    => 'bi-trash',
+                    'url'     => site_url('transactions/delete/{id}'),
+                    'class'   => 'text-danger',
+                    'confirm' => 'Delete this record?'
+                ]
+            ]
+        ]
     ],
-    'rows' => $transactions ?? null
-
-
+    'rows' => $transactions ?? []
 ]) ?>
 
 

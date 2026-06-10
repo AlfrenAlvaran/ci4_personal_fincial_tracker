@@ -21,7 +21,7 @@ class CategoryService
     {
         try {
             // 1. Validate input
-            if (! $this->validation->setRules($this->getCreateRules())->run($data)) {
+            if (!$this->validation->setRules($this->getCreateRules())->run($data)) {
                 return [
                     'success' => false,
                     'errors' => $this->validation->getErrors(),
@@ -59,7 +59,7 @@ class CategoryService
 
             $db->transComplete();
 
-            if (! $db->transStatus() || ! $categoryId) {
+            if (!$db->transStatus() || !$categoryId) {
                 throw new Exception('Failed to create category.');
             }
 
@@ -80,7 +80,7 @@ class CategoryService
     }
 
 
-    public function findByExpenses() 
+    public function findByExpenses()
     {
         return $this->categoryModel->where('user_id', AuthContext::id())->where('category_type', 'expenses')->findAll();
     }
@@ -112,5 +112,74 @@ class CategoryService
                 'rules' => 'permit_empty|max_length[1000]',
             ],
         ];
+    }
+    public function update(int $id, array $data): array
+    {
+        try {
+
+            if (
+                !$this->validation
+                    ->setRules($this->getCreateRules())
+                    ->run($data)
+            ) {
+
+                return [
+                    'success' => false,
+                    'errors' => $this->validation->getErrors(),
+                ];
+            }
+
+            $category = $this->findById($id);
+
+            if (!$category) {
+                return [
+                    'success' => false,
+                    'message' => 'Category not found.'
+                ];
+            }
+
+            $duplicate = $this->categoryModel
+                ->where('user_id', AuthContext::id())
+                ->where('category_name', trim($data['category_name']))
+                ->where('id !=', $id)
+                ->first();
+
+            if ($duplicate) {
+                return [
+                    'success' => false,
+                    'errors' => [
+                        'category_name' => 'Category already exists.'
+                    ]
+                ];
+            }
+
+            $this->categoryModel->update($id, [
+                'category_name' => trim($data['category_name']),
+                'category_type' => trim($data['category_type']),
+                'icon' => trim($data['icon']),
+                'note' => trim($data['note'] ?? ''),
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'Category updated successfully.'
+            ];
+
+        } catch (\Exception $e) {
+
+            log_message('error', $e->getMessage());
+
+            return [
+                'success' => false,
+                'message' => 'Server error occurred.'
+            ];
+        }
+    }
+    public function findById($id)
+    {
+        return $this->categoryModel
+            ->where('id', $id)
+            ->where('user_id', AuthContext::id())
+            ->first();
     }
 }
