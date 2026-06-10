@@ -6,6 +6,7 @@ use App\Controllers\CategoryController;
 use App\Controllers\DashboardController;
 use App\Controllers\ForecastingController;
 use App\Controllers\ReportController;
+use App\Controllers\SettingController;
 use App\Controllers\TransactionController;
 use CodeIgniter\Router\RouteCollection;
 
@@ -96,5 +97,21 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', [ReportController::class, 'index']);
         $routes->get('export', [ReportController::class, 'export']);
         $routes->get('debug', [ReportController::class, 'debug']);
+    });
+
+    /*
+    | SETTINGS
+    */
+
+    $routes->group('settings', function ($routes) {
+        $routes->get('/', [SettingController::class, 'setting']);
+    });
+
+    /*
+    | PROFILE
+    */
+
+    $routes->group('profile', function ($routes) {
+        $routes->get('/', [SettingController::class, 'profile']);
     });
 });
