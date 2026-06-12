@@ -9,10 +9,14 @@ $balances = [];
 
 foreach (($forecast ?? []) as $item) {
     $labels[] = $item['month'] ?? '';
-    $balances[] = $item['balance'] ?? 0;
+
+    $balances[] = $item['confidence']['expected']['balance'] ?? 0;
 }
 
+
 ?>
+
+
 
 <div class="mb-5">
 
