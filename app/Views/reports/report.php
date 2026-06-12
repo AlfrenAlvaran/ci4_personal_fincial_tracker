@@ -14,11 +14,18 @@ use function GuzzleHttp\json_encode;
     </div>
 
     <?php
-        $exportMonth    = esc($filters['month'] ?? '');
-        $exportCategory = esc($filters['category'] ?? '');
-        $exportCatName  = ($filters['category'] === 'all' || empty($filters['category']))
-            ? 'All'
-            : (collect($categories)->firstWhere('id', $filters['category'])['category_name'] ?? 'All');
+    $exportMonth    = esc($filters['month'] ?? '');
+    $exportCategory = esc($filters['category'] ?? '');
+    $exportCatName = 'All';
+
+    if (!empty($filters['category']) && $filters['category'] !== 'all') {
+        foreach ($categories as $cat) {
+            if ($cat['id'] == $filters['category']) {
+                $exportCatName = $cat['category_name'];
+                break;
+            }
+        }
+    }
     ?>
 
     <div class="dropdown">
@@ -173,28 +180,41 @@ use function GuzzleHttp\json_encode;
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const monthlyData  = <?= json_encode($chartMonthly  ?? ['labels' => [], 'income' => [], 'expenses' => []], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+    const monthlyData = <?= json_encode($chartMonthly  ?? ['labels' => [], 'income' => [], 'expenses' => []], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     const categoryData = <?= json_encode($chartCategory ?? ['labels' => [], 'data'   => []], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
 
     new Chart(document.getElementById('incomeExpenseChart'), {
         type: 'bar',
         data: {
             labels: monthlyData.labels,
-            datasets: [
-                { label: 'Income',   data: monthlyData.income },
-                { label: 'Expenses', data: monthlyData.expenses }
+            datasets: [{
+                    label: 'Income',
+                    data: monthlyData.income
+                },
+                {
+                    label: 'Expenses',
+                    data: monthlyData.expenses
+                }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
     });
 
     new Chart(document.getElementById('categoryChart'), {
         type: 'doughnut',
         data: {
             labels: categoryData.labels,
-            datasets: [{ data: categoryData.data }]
+            datasets: [{
+                data: categoryData.data
+            }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
     });
 </script>
 
