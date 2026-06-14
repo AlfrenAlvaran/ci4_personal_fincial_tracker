@@ -2,9 +2,30 @@
 
 <?= $this->section('content') ?>
 
+<?php $hasPassword = !empty($user['password']); ?>
+<?php $isGoogle = ($user['provider'] ?? null) === 'google'; ?>
+
+<?php if (session('success')): ?>
+    <div class="alert alert-success"><?= esc(session('success')) ?></div>
+<?php endif; ?>
+
+<?php if (session('error')): ?>
+    <div class="alert alert-danger"><?= esc(session('error')) ?></div>
+<?php endif; ?>
+
+<?php if (session('errors')): ?>
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            <?php foreach (session('errors') as $error): ?>
+                <li><?= esc($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
 <div class="row g-4">
 
-    <!-- PASSWORD -->
+    <!-- PASSWORD / SECURITY -->
     <div class="col-lg-6">
 
         <div class="card border h-100">
@@ -15,55 +36,61 @@
                     Security
                 </h5>
 
-                <form action="<?= site_url('settings/password') ?>"
-                    method="post">
+                <?php if (!$hasPassword): ?>
 
-                    <?= csrf_field() ?>
+                    <p class="text-muted">
+                        Your account is signed in with Google and doesn't have a password yet.
+                        Set one below to also be able to log in with your email and password.
+                    </p>
 
-                    <div class="mb-3">
+                    <form action="<?= site_url('settings/password/set') ?>" method="post">
 
-                        <label class="form-label">
-                            Current Password
-                        </label>
+                        <?= csrf_field() ?>
 
-                        <input
-                            type="password"
-                            name="current_password"
-                            class="form-control">
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" name="new_password" class="form-control" required>
+                        </div>
 
-                    </div>
+                        <div class="mb-4">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" name="confirm_password" class="form-control" required>
+                        </div>
 
-                    <div class="mb-3">
+                        <button class="btn btn-dark">
+                            Set Password
+                        </button>
 
-                        <label class="form-label">
-                            New Password
-                        </label>
+                    </form>
 
-                        <input
-                            type="password"
-                            name="new_password"
-                            class="form-control">
+                <?php else: ?>
 
-                    </div>
+                    <form action="<?= site_url('settings/password') ?>" method="post">
 
-                    <div class="mb-4">
+                        <?= csrf_field() ?>
 
-                        <label class="form-label">
-                            Confirm Password
-                        </label>
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" name="current_password" class="form-control" required>
+                        </div>
 
-                        <input
-                            type="password"
-                            name="confirm_password"
-                            class="form-control">
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" name="new_password" class="form-control" required>
+                        </div>
 
-                    </div>
+                        <div class="mb-4">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" name="confirm_password" class="form-control" required>
+                        </div>
 
-                    <button class="btn btn-dark">
-                        Update Password
-                    </button>
+                        <button class="btn btn-dark">
+                            Update Password
+                        </button>
 
-                </form>
+                    </form>
+
+                <?php endif; ?>
 
             </div>
 
@@ -82,73 +109,47 @@
                     Preferences
                 </h5>
 
-                <form action="<?= site_url('settings/preferences') ?>"
-                    method="post">
+                <form action="<?= site_url('settings/preferences') ?>" method="post">
 
                     <?= csrf_field() ?>
 
                     <div class="mb-3">
 
-                        <label class="form-label">
-                            Currency
-                        </label>
+                        <label class="form-label">Currency</label>
 
-                        <select
-                            name="currency"
-                            class="form-select">
-
-                            <option value="PHP">
+                        <select name="currency" class="form-select">
+                            <?php $currency = $user['currency'] ?? 'PHP'; ?>
+                            <option value="PHP" <?= $currency === 'PHP' ? 'selected' : '' ?>>
                                 Philippine Peso (₱)
                             </option>
-
-                            <option value="USD">
+                            <option value="USD" <?= $currency === 'USD' ? 'selected' : '' ?>>
                                 US Dollar ($)
                             </option>
-
-                            <option value="EUR">
+                            <option value="EUR" <?= $currency === 'EUR' ? 'selected' : '' ?>>
                                 Euro (€)
                             </option>
-
                         </select>
 
                     </div>
 
                     <div class="mb-3">
 
-                        <label class="form-label">
-                            Language
-                        </label>
+                        <label class="form-label">Language</label>
 
-                        <select
-                            name="language"
-                            class="form-select">
-
-                            <option>
-                                English
-                            </option>
-
+                        <select name="language" class="form-select">
+                            <option>English</option>
                         </select>
 
                     </div>
 
                     <div class="mb-4">
 
-                        <label class="form-label">
-                            Theme
-                        </label>
+                        <label class="form-label">Theme</label>
 
-                        <select
-                            name="theme"
-                            class="form-select">
-
-                            <option>
-                                Light
-                            </option>
-
-                            <option>
-                                Dark
-                            </option>
-
+                        <select name="theme" class="form-select">
+                            <?php $theme = $user['theme'] ?? 'Light'; ?>
+                            <option value="Light" <?= $theme === 'Light' ? 'selected' : '' ?>>Light</option>
+                            <option value="Dark" <?= $theme === 'Dark' ? 'selected' : '' ?>>Dark</option>
                         </select>
 
                     </div>
@@ -179,22 +180,45 @@
         <div class="d-flex justify-content-between align-items-center">
 
             <div>
-
                 <div class="fw-semibold">
                     Google Account
                 </div>
 
                 <small class="text-muted">
-                    Connected for quick login
+                    <?= $isGoogle
+                        ? 'Connected — used for quick login'
+                        : 'Not connected' ?>
                 </small>
-
             </div>
 
-            <span class="badge text-bg-success">
-                Connected
-            </span>
+            <?php if ($isGoogle): ?>
+
+                <?php if ($hasPassword): ?>
+                    <form action="<?= site_url('settings/google/disconnect') ?>" method="post" class="m-0">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                            Disconnect
+                        </button>
+                    </form>
+                <?php else: ?>
+                    <span class="badge text-bg-success">Connected</span>
+                <?php endif; ?>
+
+            <?php else: ?>
+
+                <a href="<?= site_url('auth/google') ?>" class="btn btn-outline-dark btn-sm">
+                    Connect
+                </a>
+
+            <?php endif; ?>
 
         </div>
+
+        <?php if ($isGoogle && !$hasPassword): ?>
+            <small class="text-muted d-block mt-2">
+                Set a password above to enable disconnecting your Google account.
+            </small>
+        <?php endif; ?>
 
     </div>
 
@@ -233,43 +257,50 @@
 
         <div class="modal-content">
 
-            <div class="modal-header">
+            <form action="<?= site_url('account/delete') ?>" method="post">
 
-                <h5 class="modal-title">
-                    Delete Account
-                </h5>
+                <?= csrf_field() ?>
 
-                <button
-                    class="btn-close"
-                    data-bs-dismiss="modal">
-                </button>
+                <div class="modal-header">
 
-            </div>
+                    <h5 class="modal-title">
+                        Delete Account
+                    </h5>
 
-            <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 
-                This action cannot be undone.
+                </div>
 
-            </div>
+                <div class="modal-body">
 
-            <div class="modal-footer">
+                    <p>This action cannot be undone.</p>
 
-                <button
-                    class="btn btn-light"
-                    data-bs-dismiss="modal">
+                    <?php if ($hasPassword): ?>
+                        <div class="mb-2">
+                            <label class="form-label">Confirm your password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted">
+                            Your account will be permanently deleted.
+                        </p>
+                    <?php endif; ?>
 
-                    Cancel
+                </div>
 
-                </button>
+                <div class="modal-footer">
 
-                <a href="<?= site_url('account/delete') ?>"
-                    class="btn btn-danger">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
 
-                    Delete Account
+                    <button type="submit" class="btn btn-danger">
+                        Delete Account
+                    </button>
 
-                </a>
+                </div>
 
-            </div>
+            </form>
 
         </div>
 

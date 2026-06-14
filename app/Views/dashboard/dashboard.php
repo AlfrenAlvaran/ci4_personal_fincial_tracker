@@ -9,19 +9,18 @@ $balances = [];
 
 foreach (($forecast ?? []) as $item) {
     $labels[] = $item['month'] ?? '';
-
     $balances[] = $item['confidence']['expected']['balance'] ?? 0;
 }
 
+$hour = (int) date('H');
+$greeting = $hour < 12 ? 'Good Morning' : ($hour < 18 ? 'Good Afternoon' : 'Good Evening');
 
 ?>
-
-
 
 <div class="mb-5">
 
     <h2 class="fw-bold mb-1">
-        Good Morning, <?= esc(session('username')) ?> 👋
+        <?= esc($greeting) ?>, <?= esc(session('username')) ?> 👋
     </h2>
 
     <p class="text-muted mb-0">
@@ -34,14 +33,14 @@ foreach (($forecast ?? []) as $item) {
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="card border h-100">
+        <div class="card border h-100 stat-card">
 
             <div class="card-body">
 
                 <small class="text-muted">Total Balance</small>
 
                 <h2 class="fw-bold mt-3 mb-1">
-                    ₱<?= number_format($totalBalance ?? 0, 2) ?>
+                    ₱<span class="counter" data-target="<?= esc($totalBalance ?? 0) ?>" data-decimals="2">0.00</span>
                 </h2>
 
                 <small class="text-success">
@@ -56,14 +55,14 @@ foreach (($forecast ?? []) as $item) {
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="card border h-100">
+        <div class="card border h-100 stat-card">
 
             <div class="card-body">
 
                 <small class="text-muted">Monthly Income</small>
 
                 <h2 class="fw-bold text-success mt-3 mb-1">
-                    ₱<?= number_format($totalIncome ?? 0, 2) ?>
+                    ₱<span class="counter" data-target="<?= esc($totalIncome ?? 0) ?>" data-decimals="2">0.00</span>
                 </h2>
 
                 <small class="text-muted">Current month</small>
@@ -76,14 +75,14 @@ foreach (($forecast ?? []) as $item) {
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="card border h-100">
+        <div class="card border h-100 stat-card">
 
             <div class="card-body">
 
                 <small class="text-muted">Monthly Expenses</small>
 
                 <h2 class="fw-bold text-danger mt-3 mb-1">
-                    ₱<?= number_format($monthlyExpenses ?? 0, 2) ?>
+                    ₱<span class="counter" data-target="<?= esc($monthlyExpenses ?? 0) ?>" data-decimals="2">0.00</span>
                 </h2>
 
                 <small class="text-muted">Current month</small>
@@ -96,14 +95,14 @@ foreach (($forecast ?? []) as $item) {
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="card border h-100">
+        <div class="card border h-100 stat-card">
 
             <div class="card-body">
 
                 <small class="text-muted">Net Savings</small>
 
                 <h2 class="fw-bold text-primary mt-3 mb-1">
-                    ₱<?= number_format($netSavings ?? 0, 2) ?>
+                    ₱<span class="counter" data-target="<?= esc($netSavings ?? 0) ?>" data-decimals="2">0.00</span>
                 </h2>
 
                 <small class="text-muted">Available savings</small>
@@ -140,12 +139,12 @@ foreach (($forecast ?? []) as $item) {
 
             <div class="col-md-4">
 
-                <div class="border rounded p-3">
+                <div class="border rounded p-3 stat-card">
 
                     <small class="text-muted">Forecasted Balance</small>
 
                     <h3 class="fw-bold text-success mt-2 mb-0">
-                        ₱<?= number_format($currentBalance ?? 0, 2) ?>
+                        ₱<span class="counter" data-target="<?= esc($currentBalance ?? 0) ?>" data-decimals="2">0.00</span>
                     </h3>
 
                 </div>
@@ -154,12 +153,12 @@ foreach (($forecast ?? []) as $item) {
 
             <div class="col-md-4">
 
-                <div class="border rounded p-3">
+                <div class="border rounded p-3 stat-card">
 
                     <small class="text-muted">Expected Income</small>
 
                     <h3 class="fw-bold mt-2 mb-0">
-                        ₱<?= number_format($expectedIncome ?? 0, 2) ?>
+                        ₱<span class="counter" data-target="<?= esc($expectedIncome ?? 0) ?>" data-decimals="2">0.00</span>
                     </h3>
 
                 </div>
@@ -168,12 +167,12 @@ foreach (($forecast ?? []) as $item) {
 
             <div class="col-md-4">
 
-                <div class="border rounded p-3">
+                <div class="border rounded p-3 stat-card">
 
                     <small class="text-muted">Expected Expenses</small>
 
                     <h3 class="fw-bold mt-2 mb-0">
-                        ₱<?= number_format($expectedExpenses ?? 0, 2) ?>
+                        ₱<span class="counter" data-target="<?= esc($expectedExpenses ?? 0) ?>" data-decimals="2">0.00</span>
                     </h3>
 
                 </div>
@@ -198,10 +197,9 @@ foreach (($forecast ?? []) as $item) {
 
         <?php if (!empty($recentTransactions)): ?>
 
-
             <?php foreach ($recentTransactions as $t): ?>
 
-                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center py-3 border-bottom transaction-row">
 
                     <div>
                         <div class="fw-medium">
@@ -239,6 +237,30 @@ foreach (($forecast ?? []) as $item) {
 
 </div>
 
+<style>
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: default;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .transaction-row {
+        transition: background-color 0.15s ease;
+    }
+
+    .transaction-row:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .counter {
+        display: inline-block;
+    }
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -260,16 +282,82 @@ foreach (($forecast ?? []) as $item) {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const value = context.parsed.y ?? 0;
+                                return '₱' + value.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        }
                     }
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return '₱' + value.toLocaleString('en-US');
+                            }
+                        }
                     }
                 }
             }
         }
     );
+
+    function animateCounter(el) {
+        const target = parseFloat(el.dataset.target) || 0;
+        const decimals = parseInt(el.dataset.decimals ?? '0', 10);
+        const duration = 1000;
+        const start = performance.now();
+        const startValue = 0;
+
+        function easeOutQuad(t) {
+            return t * (2 - t);
+        }
+
+        function frame(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = easeOutQuad(progress);
+            const current = startValue + (target - startValue) * eased;
+
+            el.textContent = current.toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+
+            if (progress < 1) {
+                requestAnimationFrame(frame);
+            } else {
+                el.textContent = target.toLocaleString('en-US', {
+                    minimumFractionDigits: decimals,
+                    maximumFractionDigits: decimals
+                });
+            }
+        }
+
+        requestAnimationFrame(frame);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const counters = document.querySelectorAll('.counter');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        counters.forEach((el) => observer.observe(el));
+    });
 </script>
 
 <?= $this->endSection() ?>

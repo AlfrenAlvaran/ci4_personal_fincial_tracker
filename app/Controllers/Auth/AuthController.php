@@ -5,6 +5,7 @@ namespace App\Controllers\Auth;
 use App\Controllers\BaseController;
 use App\Services\AuthService;
 use Google\Client;
+
 class AuthController extends BaseController
 {
     protected AuthService $authService;
@@ -135,10 +136,6 @@ class AuthController extends BaseController
 
     public function googleCallback()
     {
-        // if ($this->request->getGet('code') || $this->request->getGet('state')) {
-        //     return redirect()->to('login')
-        //         ->with('error', 'Google login failed: missing authorization data');
-        // }
         $result = $this->authService->loginWithOAuth(
             'google',
             $this->request->getGet('code'),
@@ -154,6 +151,24 @@ class AuthController extends BaseController
         return redirect()->to('/');
     }
     // GOOGLE
+
+    public function profile()
+    {
+        if (!session()->get('logged_in')) {
+            return redirect()->to('/login');
+        }
+
+        $profile = $this->authService->getProfile((int) session()->get('user_id'));
+        if (!$profile) {
+            session()->destroy();
+            return redirect()->to('/login')->with('error', 'User not found.');
+        }
+
+        return view('auth/profile', [
+            'title' => 'My Profile',
+            'user' => $profile
+        ]);
+    }
     public function logout()
     {
         session()->destroy();
