@@ -197,7 +197,7 @@ foreach (($forecast ?? []) as $item) {
         <h5 class="fw-semibold mb-4">Recent Activity</h5>
 
         <?php if (!empty($recentTransactions)): ?>
-           
+
 
             <?php foreach ($recentTransactions as $t): ?>
 

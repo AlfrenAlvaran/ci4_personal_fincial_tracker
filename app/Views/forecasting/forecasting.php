@@ -18,20 +18,21 @@ $summarySavings = $firstMonth['ensemble']['savings'] ?? 0;
 var_dump($summaryExpenses);
 
 
-foreach ($forecast as $item) {
-    $labels[] = $item['month'];
-    $bestBalances[] = $item['confidence']['best']['balance'];
-    $midBalances[] = $item['confidence']['expected']['balance'];
-    $worstBalances[] = $item['confidence']['worst']['balance'];
+if (!empty($forecast)) {
+    foreach ($forecast as $item) {
+        $labels[] = $item['month'];
+        $bestBalances[] = $item['confidence']['best']['balance'];
+        $midBalances[] = $item['confidence']['expected']['balance'];
+        $worstBalances[] = $item['confidence']['worst']['balance'];
+    }
 }
-
 ?>
 
 <div class="mb-4">
     <h2 class="fw-bold mb-1">Forecasting</h2>
     <p class="text-muted mb-0">
         Predict your future financial performance based on historical data.
-        <span class="badge text-bg-secondary ms-1"><?= $historicalMonths ?> months of history</span>
+        <span class="badge text-bg-secondary ms-1"><?= $historicalMonths ?? 0 ?> months of history</span>
     </p>
 </div>
 
@@ -42,7 +43,7 @@ foreach ($forecast as $item) {
             <div class="card-body">
                 <small class="text-muted">Current Balance</small>
                 <h2 class="fw-bold text-success mt-3">
-                    ₱<?= number_format($currentBalance, 2) ?>
+                    ₱<?= number_format($currentBalance ?? 0, 2) ?>
                 </h2>
             </div>
         </div>
@@ -122,11 +123,14 @@ foreach ($forecast as $item) {
 
         <h5 class="fw-semibold mb-4">Forecast Insights</h5>
 
-        <?php foreach ($insights as $insight): ?>
-            <div class="alert alert-<?= esc($insight['type']) ?> mb-3">
-                <?= esc($insight['message']) ?>
-            </div>
-        <?php endforeach; ?>
+        <?php if (!empty($insights)): ?>
+            <?php foreach ($insights as $insight): ?>
+                <div class="alert alert-<?= esc($insight['type']) ?> mb-3">
+                    <?= esc($insight['message']) ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
 
     </div>
 </div>
@@ -186,15 +190,17 @@ foreach ($forecast as $item) {
 
             <?php foreach ($expenseByCategory as $category => $spent):
                 $budget = 0;
-                foreach ($budgetByCategory as $budgetKey => $budgetVal) {
-                    if (strtolower($budgetKey) === strtolower($category)) {
-                        $budget = $budgetVal;
-                        break;
+                if (!empty($budgetByCategory)) {
+                    foreach ($budgetByCategory as $budgetKey => $budgetVal) {
+                        if (strtolower($budgetKey) === strtolower($category)) {
+                            $budget = $budgetVal;
+                            break;
+                        }
                     }
                 }
                 $pct = $budget > 0 ? min(100, round(($spent / $budget) * 100)) : null;
                 $barClass = $pct >= 90 ? 'bg-danger' : ($pct >= 70 ? 'bg-warning' : 'bg-success');
-                ?>
+            ?>
 
                 <div class="mb-3">
                     <div class="d-flex justify-content-between mb-1">
@@ -247,36 +253,38 @@ foreach ($forecast as $item) {
                 </thead>
 
                 <tbody>
-                    <?php foreach ($forecast as $row): ?>
-                        <tr>
-                            <td><?= esc($row['month']) ?></td>
-                            <td>₱<?= number_format($row['ensemble']['income'], 2) ?></td>
-                            <td>₱<?= number_format($row['ensemble']['expenses'], 2) ?></td>
-                            <td
-                                class="<?= $row['ensemble']['savings'] >= 0 ? 'text-success' : 'text-danger' ?> fw-semibold">
-                                ₱<?= number_format($row['ensemble']['savings'], 2) ?>
-                            </td>
-                            <td class="text-success">
-                                ₱<?= number_format($row['confidence']['best']['balance'], 2) ?>
-                            </td>
-                            <td class="fw-semibold">
-                                ₱<?= number_format($row['confidence']['expected']['balance'], 2) ?>
-                            </td>
-                            <td class="text-danger">
-                                ₱<?= number_format($row['confidence']['worst']['balance'], 2) ?>
-                            </td>
-                            <td>
-                                <?php if ($row['budget_burn_rate_pct'] !== null): ?>
-                                    <span
-                                        class="badge text-bg-<?= $row['budget_burn_rate_pct'] >= 100 ? 'danger' : ($row['budget_burn_rate_pct'] >= 80 ? 'warning' : 'success') ?>">
-                                        <?= $row['budget_burn_rate_pct'] ?>%
-                                    </span>
-                                <?php else: ?>
-                                    <span class="text-muted">—</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                    <?php if (!empty($forecast)): ?>
+                        <?php foreach ($forecast as $row): ?>
+                            <tr>
+                                <td><?= esc($row['month']) ?></td>
+                                <td>₱<?= number_format($row['ensemble']['income'], 2) ?></td>
+                                <td>₱<?= number_format($row['ensemble']['expenses'], 2) ?></td>
+                                <td
+                                    class="<?= $row['ensemble']['savings'] >= 0 ? 'text-success' : 'text-danger' ?> fw-semibold">
+                                    ₱<?= number_format($row['ensemble']['savings'], 2) ?>
+                                </td>
+                                <td class="text-success">
+                                    ₱<?= number_format($row['confidence']['best']['balance'], 2) ?>
+                                </td>
+                                <td class="fw-semibold">
+                                    ₱<?= number_format($row['confidence']['expected']['balance'], 2) ?>
+                                </td>
+                                <td class="text-danger">
+                                    ₱<?= number_format($row['confidence']['worst']['balance'], 2) ?>
+                                </td>
+                                <td>
+                                    <?php if ($row['budget_burn_rate_pct'] !== null): ?>
+                                        <span
+                                            class="badge text-bg-<?= $row['budget_burn_rate_pct'] >= 100 ? 'danger' : ($row['budget_burn_rate_pct'] >= 80 ? 'warning' : 'success') ?>">
+                                            <?= $row['budget_burn_rate_pct'] ?>%
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-muted">—</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif ?>
                 </tbody>
 
             </table>
@@ -315,33 +323,36 @@ foreach ($forecast as $item) {
                 </thead>
 
                 <tbody>
-                    <?php foreach ($forecast as $row):
-                        $lr = $row['models']['linear_regression'];
-                        $wma = $row['models']['weighted_moving_average'];
-                        $es = $row['models']['exponential_smoothing'];
+                    <?php if (!empty($forecast)): ?>
+                        <?php ?>
+                        <?php foreach ($forecast as $row):
+                            $lr = $row['models']['linear_regression'];
+                            $wma = $row['models']['weighted_moving_average'];
+                            $es = $row['models']['exponential_smoothing'];
                         ?>
-                        <tr>
-                            <td><?= esc($row['month']) ?></td>
+                            <tr>
+                                <td><?= esc($row['month']) ?></td>
 
-                            <td class="border-start">₱<?= number_format($lr['income'], 2) ?></td>
-                            <td>₱<?= number_format($lr['expenses'], 2) ?></td>
-                            <td class="<?= $lr['savings'] >= 0 ? 'text-success' : 'text-danger' ?>">
-                                ₱<?= number_format($lr['savings'], 2) ?>
-                            </td>
+                                <td class="border-start">₱<?= number_format($lr['income'], 2) ?></td>
+                                <td>₱<?= number_format($lr['expenses'], 2) ?></td>
+                                <td class="<?= $lr['savings'] >= 0 ? 'text-success' : 'text-danger' ?>">
+                                    ₱<?= number_format($lr['savings'], 2) ?>
+                                </td>
 
-                            <td class="border-start">₱<?= number_format($wma['income'], 2) ?></td>
-                            <td>₱<?= number_format($wma['expenses'], 2) ?></td>
-                            <td class="<?= $wma['savings'] >= 0 ? 'text-success' : 'text-danger' ?>">
-                                ₱<?= number_format($wma['savings'], 2) ?>
-                            </td>
+                                <td class="border-start">₱<?= number_format($wma['income'], 2) ?></td>
+                                <td>₱<?= number_format($wma['expenses'], 2) ?></td>
+                                <td class="<?= $wma['savings'] >= 0 ? 'text-success' : 'text-danger' ?>">
+                                    ₱<?= number_format($wma['savings'], 2) ?>
+                                </td>
 
-                            <td class="border-start">₱<?= number_format($es['income'], 2) ?></td>
-                            <td>₱<?= number_format($es['expenses'], 2) ?></td>
-                            <td class="<?= $es['savings'] >= 0 ? 'text-success' : 'text-danger' ?>">
-                                ₱<?= number_format($es['savings'], 2) ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                                <td class="border-start">₱<?= number_format($es['income'], 2) ?></td>
+                                <td>₱<?= number_format($es['expenses'], 2) ?></td>
+                                <td class="<?= $es['savings'] >= 0 ? 'text-success' : 'text-danger' ?>">
+                                    ₱<?= number_format($es['savings'], 2) ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif ?>
                 </tbody>
 
             </table>
@@ -363,8 +374,7 @@ foreach ($forecast as $item) {
         type: 'line',
         data: {
             labels,
-            datasets: [
-                {
+            datasets: [{
                     label: 'Best Case',
                     data: bestBalances,
                     borderColor: 'rgba(25,135,84,0.8)',
@@ -399,7 +409,11 @@ foreach ($forecast as $item) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: true } },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
             scales: {
                 y: {
                     ticks: {
@@ -410,7 +424,7 @@ foreach ($forecast as $item) {
         }
     });
 
-  
+
     <?php
     $lrExpenses = array_map(fn($r) => $r['models']['linear_regression']['expenses'], $forecast);
     $wmaExpenses = array_map(fn($r) => $r['models']['weighted_moving_average']['expenses'], $forecast);
@@ -420,8 +434,7 @@ foreach ($forecast as $item) {
         type: 'bar',
         data: {
             labels,
-            datasets: [
-                {
+            datasets: [{
                     label: 'Linear Regression',
                     data: <?= json_encode($lrExpenses, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
                     backgroundColor: 'rgba(13,110,253,0.7)',
@@ -441,10 +454,16 @@ foreach ($forecast as $item) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: true } },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
             scales: {
                 y: {
-                    ticks: { callback: v => '₱' + v.toLocaleString() }
+                    ticks: {
+                        callback: v => '₱' + v.toLocaleString()
+                    }
                 }
             }
         }
