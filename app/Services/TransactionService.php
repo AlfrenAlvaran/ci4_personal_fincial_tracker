@@ -222,7 +222,7 @@ class TransactionService extends BaseService
         $this->transactionModel->delete($id);
 
         return [
-            'success' => true,
+        'success' => true,
             'message' => 'Transaction deleted successfully.',
         ];
     }
